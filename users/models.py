@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.auth.models import AbstractUser
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -10,7 +10,10 @@ class User(AbstractUser):
     final_score = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     passed_tests_number = models.PositiveIntegerField(blank=True, null=True)
 
+    class Meta:
+        ordering = ['rank_place']
 
-
+    def get_groups(self):
+        return self.groups.all()
 
 

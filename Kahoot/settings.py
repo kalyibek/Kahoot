@@ -20,6 +20,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -31,7 +32,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'django_filters',
-    'users'
+    'users',
+    'quizes',
 ]
 
 MIDDLEWARE = [
