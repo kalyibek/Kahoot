@@ -6,8 +6,6 @@ class Quiz(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
-    questions_number = models.IntegerField()
-    time = models.IntegerField()
     groups = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="quiz_set")
 
     def __str__(self):
@@ -23,12 +21,16 @@ class Quiz(models.Model):
 class Question(models.Model):
     text = models.CharField(max_length=255)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='question_set')
+    time = models.IntegerField(default=20)
 
     def __str__(self):
         return self.text
 
     def get_answers(self):
         return self.answer_set.all()
+
+    def get_correct_answer(self):
+        return self.answer_set.get(correct=True)
 
 
 class Answer(models.Model):

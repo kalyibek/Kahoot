@@ -7,7 +7,7 @@ class UserAdmin(admin.ModelAdmin):
         'id',
         'first_name',
         'last_name',
-        'get_groups',
+        'groups',
         'phone_number',
         'username',
         'rank_place',

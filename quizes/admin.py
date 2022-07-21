@@ -12,7 +12,10 @@ class AnswerInline(admin.TabularInline):
 
 class QuizAdmin(admin.ModelAdmin):
     inlines = [QuestionInline]
-    list_display = ('name', 'questions_number', 'time')
+    list_display = ('name', 'questions_number')
+
+    def questions_number(self, obj: Quiz):
+        return obj.get_questions().count()
 
 
 class QuestionAdmin(admin.ModelAdmin):
