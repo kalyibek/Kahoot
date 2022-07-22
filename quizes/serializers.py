@@ -2,6 +2,24 @@ from rest_framework import serializers
 from .models import *
 
 
+class QuestionResultSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        return QuestionResult.objects.create(**validated_data)
+
+    class Meta:
+        model = QuestionResult
+        fields = '__all__'
+
+
+class QuizResultSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        return QuizResult.objects.create(**validated_data)
+
+    class Meta:
+        model = QuizResult
+        fields = '__all__'
+
+
 class AnswerSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Answer.objects.create(**validated_data)

@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import Group
+from rest_framework.exceptions import ValidationError
+
+from Kahoot import settings
+from users.models import User
 
 
 class Quiz(models.Model):
@@ -41,13 +45,29 @@ class Answer(models.Model):
     def __str__(self):
         return f'{self.question.text}: answer: {self.text}'
 
+    def save(self, *args, **kwargs):
+        if Answer.objects.filter(question=self.question).count() < settings.MAX_ANSWER_COUNT:
+            super().save(*args, **kwargs)
+        else:
+            raise ValidationError('Too many entries!')
+
 
 class QuizResult(models.Model):
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='quiz_results_set')
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    score = models.FloatField(null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_result_set', null=True)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='quiz_result', null=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='quiz_result_group', null=True)
+
+    def __str__(self):
+        return f'{self.user.first_name} {self.user.last_name} : {self.score}'
 
 
 class QuestionResult(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='question_results_set')
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    score = models.FloatField(null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='question_result_set', null=True)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='question_result', null=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='question_result_group', null=True)
+
+    def __str__(self):
+        return f'{self.user.first_name} {self.user.last_name} : {self.score}'
 

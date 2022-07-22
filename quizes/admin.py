@@ -1,25 +1,29 @@
 from django.contrib import admin
 from .models import *
+from nested_inline.admin import NestedModelAdmin, NestedStackedInline
 
 
-class QuestionInline(admin.TabularInline):
-    model = Question
-
-
-class AnswerInline(admin.TabularInline):
+class AnswerInline(NestedStackedInline):
     model = Answer
+    extra = 0
 
 
-class QuizAdmin(admin.ModelAdmin):
+class QuestionAdmin(NestedModelAdmin):
+    inlines = [AnswerInline]
+
+
+class QuestionInline(NestedStackedInline):
+    inlines = [AnswerInline]
+    model = Question
+    extra = 0
+
+
+class QuizAdmin(NestedModelAdmin):
     inlines = [QuestionInline]
     list_display = ('name', 'questions_number')
 
     def questions_number(self, obj: Quiz):
         return obj.get_questions().count()
-
-
-class QuestionAdmin(admin.ModelAdmin):
-    inlines = [AnswerInline]
 
 
 admin.site.register(Quiz, QuizAdmin)

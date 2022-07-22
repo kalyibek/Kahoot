@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.http import HttpResponse
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -40,26 +41,49 @@ class AnswersList(generics.ListAPIView):
     serializer_class = AnswerSerializer
 
 
+class QuizResultsList(generics.ListAPIView):
+    queryset = QuizResult.objects.all()
+    serializer_class = QuizResultSerializer
+
+
+class QuestionResultsList(generics.ListAPIView):
+    queryset = QuestionResult.objects.all()
+    serializer_class = QuestionResultSerializer
+
+
 class CheckAnswers(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, pk):
-        user = User.objects.get(pk=request.user.pk)
-        question = Question.objects.get(pk=pk)
+    @staticmethod
+    def post(request, pk):
         data = json.loads(request.body)
-        if data['submit']:
-            user.passed_tests_number += 1
-            user.save()
+        user = User.objects.get(pk=request.user.pk)
+        group = Group.objects.get(pk=user.groups.pk)
+        question = Question.objects.get(pk=pk)
+        quiz = Quiz.objects.get(pk=data['quiz'])
+        result = 0
         if question.get_correct_answer().text == data['answer']:
-            fact_time = int(data['time'])
+            fact_time = data['time']
             if fact_time == 1:
                 result = 100 - (100 / question.time * fact_time) + (100 / question.time)
             else:
                 result = 100 - (100 / question.time * fact_time)
-            return HttpResponse(f"Got json data {result}")
+            question_score = QuestionResult.objects.create(score=result, user=user, quiz=quiz, group=group)
+            question_score.save()
 
-    def set_rating(self):
-        pass
+        if data['submit']:
+            question_scores = QuestionResult.objects.filter(user=user, quiz=quiz, group=group)
+            final_score = question_scores.aggregate(Sum('score'))['score__sum'] / question_scores.count()
+            quiz_score = QuizResult.objects.create(score=final_score, user=user, quiz=quiz, group=group)
+            quiz_score.save()
+            user.passed_tests_number += 1
+            user.save()
+            user_scores = QuizResult.objects.filter(user=user)
+            user_global_score = user_scores.aggregate(Sum('score'))['score__sum'] / user_scores.count()
+            user.final_score = user_global_score
+            user.save()
 
+            return HttpResponse(f"Quiz score {final_score}")
 
+        return HttpResponse(f"Question score {result}")

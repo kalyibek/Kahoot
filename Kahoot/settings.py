@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django_filters',
     'users',
     'quizes',
+    'nested_inline',
 ]
 
 MIDDLEWARE = [
@@ -98,6 +99,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'users.User'
+MAX_ANSWER_COUNT = 4
 
 
 # Internationalization
