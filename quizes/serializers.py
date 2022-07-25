@@ -2,9 +2,32 @@ from rest_framework import serializers
 from .models import *
 
 
-class QuestionResultSerializer(serializers.ModelSerializer):
+class AnswerCheckSerializer(serializers.Serializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    question_id = serializers.IntegerField()
+    quiz_id = serializers.IntegerField()
+    answer = serializers.CharField(max_length=255)
+    fact_time = serializers.IntegerField()
+
     def create(self, validated_data):
-        return QuestionResult.objects.create(**validated_data)
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
+
+class QuizSubmitSerializer(serializers.Serializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    quiz_id = serializers.IntegerField()
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
+
+class QuestionResultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QuestionResult
@@ -12,8 +35,6 @@ class QuestionResultSerializer(serializers.ModelSerializer):
 
 
 class QuizResultSerializer(serializers.ModelSerializer):
-    def create(self, validated_data):
-        return QuizResult.objects.create(**validated_data)
 
     class Meta:
         model = QuizResult
@@ -21,8 +42,6 @@ class QuizResultSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
-    def create(self, validated_data):
-        return Answer.objects.create(**validated_data)
 
     class Meta:
         model = Answer
@@ -33,9 +52,6 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     answer_set = AnswerSerializer(many=True)
 
-    def create(self, validated_data):
-        return Question.objects.create(**validated_data)
-
     class Meta:
         model = Question
         fields = ['id', 'text', 'quiz', 'time', 'answer_set']
@@ -45,9 +61,6 @@ class QuizSerializer(serializers.ModelSerializer):
 
     question_set = QuestionSerializer(many=True)
 
-    def create(self, validated_data):
-        return Quiz.objects.create(**validated_data)
-
     class Meta:
         model = Quiz
-        fields = ['id', 'name', 'description', 'created', 'groups', 'question_set']
+        fields = ['id', 'name', 'description', 'created', 'question_set']

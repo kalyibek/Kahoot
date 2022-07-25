@@ -20,10 +20,16 @@ class QuestionInline(NestedStackedInline):
 
 class QuizAdmin(NestedModelAdmin):
     inlines = [QuestionInline]
-    list_display = ('name', 'questions_number')
+    list_display = ('name', 'questions_number', 'passed_users_number')
 
-    def questions_number(self, obj: Quiz):
+    @staticmethod
+    def questions_number(obj: Quiz):
         return obj.get_questions().count()
+
+    @staticmethod
+    def passed_users_number(obj: Quiz):
+        result = User.objects.filter(passed_tests=obj)
+        return result.count()
 
 
 admin.site.register(Quiz, QuizAdmin)
