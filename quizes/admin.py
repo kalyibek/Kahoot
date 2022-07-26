@@ -49,6 +49,9 @@ class QuizAdmin(NestedModelAdmin):
         result = User.objects.filter(passed_tests=obj)
         return result.count()
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 admin.site.register(Quiz, QuizAdmin)
 admin.site.register(Question, QuestionAdmin)
