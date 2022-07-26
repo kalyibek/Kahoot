@@ -1,3 +1,5 @@
+import os
+
 from django.db import models
 from django.contrib.auth.models import Group
 from django.db.models import Sum
@@ -7,9 +9,16 @@ from Kahoot import settings
 from users.models import User
 
 
+def images_path():
+    return os.path.join(settings.MEDIA_ROOT, 'images')
+
+
 class Quiz(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    img = models.ImageField(upload_to=images_path(), null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -95,7 +104,8 @@ class QuestionResult(models.Model):
         score = 0
         question = Question.objects.get(pk=question_id)
         quiz = Quiz.objects.get(pk=quiz_id)
-        if question.get_correct_answer().text == answer:
+        user_answer = question.answer_set.get(text=answer)
+        if question.get_correct_answer().text == user_answer.text:
             if fact_time == 1:
                 score = 100 - (100 / question.time * fact_time) + (100 / question.time)
             else:
@@ -104,5 +114,5 @@ class QuestionResult(models.Model):
         return QuestionResult.objects.create(score=score,
                                              user=user,
                                              quiz=quiz,
-                                             answer=question.get_correct_answer(),
+                                             answer=user_answer,
                                              group=user.groups)

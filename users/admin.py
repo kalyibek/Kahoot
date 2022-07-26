@@ -27,7 +27,7 @@ class UserAdmin(NestedModelAdmin):
         'passed_tests_number',
     )
     list_display_links = ('id', 'first_name', 'last_name', 'username')
-    search_fields = ('first_name', 'last_name')
+    search_fields = ('first_name', 'last_name', 'phone_number')
     list_filter = ['groups']
     inlines = [QuestionResultInline]
 

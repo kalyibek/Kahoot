@@ -9,8 +9,8 @@ class User(AbstractUser):
     phone_number = PhoneNumberField(unique=True, blank=True, null=True)
     final_score = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True, default=0)
     passed_tests_number = models.PositiveIntegerField(blank=True, null=True, default=0)
-    passed_tests = models.ManyToManyField('quizes.Quiz', related_name='passed_user_set', null=True)
-    groups = models.ForeignKey(Group,  on_delete=models.CASCADE, related_name="user_set", null=True)
+    passed_tests = models.ManyToManyField('quizes.Quiz', related_name='passed_user_set', null=True, blank=True)
+    groups = models.ForeignKey(Group,  on_delete=models.CASCADE, related_name="user_set", null=True, blank=True)
 
     class Meta:
         ordering = ['-passed_tests_number', '-final_score']

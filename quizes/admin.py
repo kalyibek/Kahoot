@@ -7,15 +7,33 @@ class AnswerInline(NestedStackedInline):
     model = Answer
     extra = 0
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj):
+        return False
+
 
 class QuestionAdmin(NestedModelAdmin):
     inlines = [AnswerInline]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class QuestionInline(NestedStackedInline):
     inlines = [AnswerInline]
     model = Question
     extra = 0
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj):
+        return False
 
 
 class QuizAdmin(NestedModelAdmin):
