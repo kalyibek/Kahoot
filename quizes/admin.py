@@ -10,15 +10,15 @@ class AnswerInline(NestedStackedInline):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def has_add_permission(self, request, obj):
-        return False
+    # def has_add_permission(self, request, obj):
+    #     return False
 
 
 class QuestionAdmin(NestedModelAdmin):
     inlines = [AnswerInline]
 
-    def has_add_permission(self, request):
-        return False
+    # def has_add_permission(self, request):
+    #     return False
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -32,8 +32,8 @@ class QuestionInline(NestedStackedInline):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def has_add_permission(self, request, obj):
-        return False
+    # def has_add_permission(self, request, obj):
+    #     return False
 
 
 class QuizAdmin(NestedModelAdmin):
@@ -49,8 +49,8 @@ class QuizAdmin(NestedModelAdmin):
         result = User.objects.filter(passed_tests=obj)
         return result.count()
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
 
 admin.site.register(Quiz, QuizAdmin)

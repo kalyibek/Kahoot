@@ -25,6 +25,8 @@ class UserAdmin(NestedModelAdmin):
         'username',
         'final_score',
         'passed_tests_number',
+        'rank_place',
+        'group_rank_place',
     )
     list_display_links = ('id', 'first_name', 'last_name', 'username')
     search_fields = ('first_name', 'last_name', 'phone_number')

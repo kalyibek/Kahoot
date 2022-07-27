@@ -80,8 +80,10 @@ class QuizResult(models.Model):
         final_score = question_scores.aggregate(Sum('score'))['score__sum'] / question_scores.count()
 
         user.set_passed_tests_number(1)
-        user.set_final_score(user.calculate_final_score(QuizResult.objects.filter(user=user), final_score))
+        user.set_final_score(final_score)
         user.add_test(quiz)
+        user.set_rank_place()
+        user.set_group_rank_place()
 
         return QuizResult.objects.create(score=final_score,
                                          user=user,
