@@ -52,29 +52,3 @@ class QuestionResultCreateViewSet(viewsets.GenericViewSet,
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class QuizResultViewSet(viewsets.GenericViewSet,
-                        mixins.ListModelMixin,
-                        mixins.RetrieveModelMixin):
-
-    serializer_class = QuizResultSerializer
-    queryset = QuizResult.objects.all()
-    permission_classes = (IsAuthenticated,)
-
-
-class QuizResultCreateViewSet(viewsets.GenericViewSet,
-                              mixins.CreateModelMixin):
-
-    serializer_class = QuizSubmitSerializer
-    queryset = QuizResult.objects.all()
-    permission_classes = (IsAuthenticated,)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        QuizResult.calculate_score(**serializer.validated_data)
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

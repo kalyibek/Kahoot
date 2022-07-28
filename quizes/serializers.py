@@ -8,17 +8,7 @@ class AnswerCheckSerializer(serializers.Serializer):
     quiz_id = serializers.IntegerField()
     answer = serializers.CharField(max_length=255)
     fact_time = serializers.IntegerField()
-
-    def create(self, validated_data):
-        pass
-
-    def update(self, instance, validated_data):
-        pass
-
-
-class QuizSubmitSerializer(serializers.Serializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    quiz_id = serializers.IntegerField()
+    submit = serializers.BooleanField(default=False)
 
     def create(self, validated_data):
         pass
@@ -31,13 +21,6 @@ class QuestionResultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QuestionResult
-        fields = '__all__'
-
-
-class QuizResultSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = QuizResult
         fields = '__all__'
 
 

@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
@@ -22,7 +21,7 @@ class TestView(APIView):
 class UsersList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['first_name', 'last_name', 'phone_number']
     filterset_fields = ['groups']
@@ -31,6 +30,6 @@ class UsersList(generics.ListAPIView):
 class UsersRetrieve(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 

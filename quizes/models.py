@@ -1,8 +1,6 @@
 import os
-
 from django.db import models
 from django.contrib.auth.models import Group
-from django.db.models import Sum
 from rest_framework.exceptions import ValidationError
 
 from Kahoot import settings
@@ -37,7 +35,7 @@ class Question(models.Model):
     time = models.IntegerField(default=20)
 
     def __str__(self):
-        return self.text
+        return f'id {self.pk}'
 
     def get_answers(self):
         return self.answer_set.all()
@@ -52,43 +50,13 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answer_set')
 
     def __str__(self):
-        return f'{self.question.text}: answer: {self.text}'
+        return f'id {self.pk}'
 
     def save(self, *args, **kwargs):
         if Answer.objects.filter(question=self.question).count() < settings.MAX_ANSWER_COUNT:
             super().save(*args, **kwargs)
         else:
             raise ValidationError('Too many entries!')
-
-
-class QuizResult(models.Model):
-    score = models.FloatField(null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_result_set', null=True)
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='quiz_result', null=True)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='quiz_result_group', null=True)
-
-    def __str__(self):
-        return f'{self.user.first_name} {self.user.last_name} : {self.score}'
-
-    @staticmethod
-    def calculate_score(user, quiz_id):
-        quiz = Quiz.objects.get(pk=quiz_id)
-        question_scores = QuestionResult.objects.filter(user=user,
-                                                        quiz=quiz,
-                                                        group=user.groups)
-
-        final_score = question_scores.aggregate(Sum('score'))['score__sum'] / question_scores.count()
-
-        user.set_passed_tests_number(1)
-        user.set_final_score(final_score)
-        user.add_test(quiz)
-        user.set_rank_place()
-        user.set_group_rank_place()
-
-        return QuizResult.objects.create(score=final_score,
-                                         user=user,
-                                         quiz=quiz,
-                                         group=user.groups)
 
 
 class QuestionResult(models.Model):
@@ -102,7 +70,9 @@ class QuestionResult(models.Model):
         return f'{self.user.first_name} {self.user.last_name} : {self.score}'
 
     @staticmethod
-    def calculate_score(question_id, quiz_id, user: User, answer, fact_time):
+    def calculate_score(user: User, question_id, quiz_id, answer, fact_time, submit):
+        if submit:
+            QuestionResult.submit_quiz(quiz_id, user)
         score = 0
         question = Question.objects.get(pk=question_id)
         quiz = Quiz.objects.get(pk=quiz_id)
@@ -113,8 +83,18 @@ class QuestionResult(models.Model):
             else:
                 score = 100 - (100 / question.time * fact_time)
 
+        user.set_final_score(score)
+        user.set_rank_place()
+        user.set_group_rank_place()
+
         return QuestionResult.objects.create(score=score,
                                              user=user,
                                              quiz=quiz,
                                              answer=user_answer,
                                              group=user.groups)
+
+    @staticmethod
+    def submit_quiz(quiz_id, user: User):
+        quiz = Quiz.objects.get(pk=quiz_id)
+        user.set_passed_tests_number(1)
+        user.add_test(quiz)

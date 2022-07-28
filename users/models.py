@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group
 from django.core.validators import MinValueValidator
-from django.db.models import Max
 from phonenumber_field.modelfields import PhoneNumberField
 
 
