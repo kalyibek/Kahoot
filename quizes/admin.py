@@ -1,13 +1,15 @@
 from django.contrib import admin
 from .models import *
 from nested_inline.admin import NestedModelAdmin, NestedStackedInline
+import nested_admin
 
-
-class AnswerInline(NestedStackedInline):
+class AnswerInline(nested_admin.NestedStackedInline):
     model = Answer
-    extra = 0
-    fields = ('text', 'correct')
-    readonly_fields = ('text', 'correct')
+    extra = 4
+    max_num = 4
+
+    # fields = ('text', 'correct')
+    # readonly_fields = ('text', 'correct')
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -16,7 +18,7 @@ class AnswerInline(NestedStackedInline):
     #     return False
 
 
-class QuestionInline(NestedStackedInline):
+class QuestionInline(nested_admin.NestedStackedInline):
     inlines = [AnswerInline]
     model = Question
     extra = 0
@@ -30,14 +32,14 @@ class QuestionInline(NestedStackedInline):
     #     return False
 
 
-class AnswerAdmin(NestedModelAdmin):
+class AnswerAdmin(nested_admin.NestedModelAdmin):
     list_display = ('id', 'text', 'correct', 'question')
 
     def has_delete_permission(self, request, obj=None):
         return False
 
 
-class QuestionAdmin(NestedModelAdmin):
+class QuestionAdmin(nested_admin.NestedModelAdmin):
     inlines = [AnswerInline]
     list_display = ('id', 'text', 'time', 'quiz')
 
@@ -48,7 +50,7 @@ class QuestionAdmin(NestedModelAdmin):
         return False
 
 
-class QuizAdmin(NestedModelAdmin):
+class QuizAdmin(nested_admin.NestedModelAdmin):
     inlines = [QuestionInline]
     list_display = ('name', 'questions_number', 'passed_users_number')
 

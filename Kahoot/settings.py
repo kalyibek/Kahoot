@@ -31,7 +31,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'rest_framework_swagger',
+    'drf_yasg2',
     'phonenumber_field',
     'rest_framework',
     'djoser',
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'users',
     'quizes',
     'nested_inline',
+    'nested_admin',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +70,17 @@ TEMPLATES = [
         },
     },
 ]
+
+
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "api_key": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Authorization"
+        }
+    },
+}
 
 WSGI_APPLICATION = 'Kahoot.wsgi.application'
 
