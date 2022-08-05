@@ -15,5 +15,3 @@ class UserListSerializer(UserSerializer):
             'final_score',
             'passed_tests_number',
         ]
-
-
